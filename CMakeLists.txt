@@ -345,19 +345,16 @@ elseif (APPLE AND NOT OGRE_BUILD_PLATFORM_APPLE_IOS)
       if(CMAKE_GENERATOR STREQUAL "Unix Makefiles")
         set(CMAKE_OSX_ARCHITECTURES "${ARCHS_STANDARD_64_BIT}")
       else()
-        set(CMAKE_OSX_ARCHITECTURES "$(ARCHS_STANDARD_64_BIT)")
+        set(CMAKE_OSX_ARCHITECTURES "${ARCHS_STANDARD_64_BIT}")
       endif()
     else()
       if(CMAKE_GENERATOR STREQUAL "Unix Makefiles")
         set(CMAKE_OSX_ARCHITECTURES "${ARCHS_STANDARD_32_64_BIT}")
       else()
-        set(CMAKE_OSX_ARCHITECTURES "$(ARCHS_STANDARD_32_64_BIT)")
+        set(CMAKE_OSX_ARCHITECTURES "${ARCHS_STANDARD_32_64_BIT}")
       endif()
     endif()
   endif()
-
-  # 10.7 is the minimum for libc++ support
-  set(CMAKE_OSX_DEPLOYMENT_TARGET 10.7)
 
   # Make sure that the OpenGL render system is selected for non-iOS Apple builds
   set(OGRE_BUILD_RENDERSYSTEM_GLES2 FALSE)
@@ -420,6 +417,7 @@ cmake_dependent_option(OGRE_BUILD_COMPONENT_OVERLAY "Build Overlay component" TR
 option(OGRE_BUILD_COMPONENT_RTSHADERSYSTEM "Build RTShader System component" FALSE)
 cmake_dependent_option(OGRE_BUILD_RTSHADERSYSTEM_CORE_SHADERS "Build RTShader System FFP core shaders" FALSE "OGRE_BUILD_COMPONENT_RTSHADERSYSTEM" FALSE)
 cmake_dependent_option(OGRE_BUILD_RTSHADERSYSTEM_EXT_SHADERS "Build RTShader System extensions shaders" FALSE "OGRE_BUILD_COMPONENT_RTSHADERSYSTEM" FALSE)
+cmake_dependent_option(OGRE_BUILD_LIBS_AS_FRAMEWORKS "Build frameworks for libraries on OS X." TRUE "APPLE;NOT OGRE_BUILD_PLATFORM_APPLE_IOS" FALSE)
 
 cmake_dependent_option(OGRE_BUILD_SAMPLES "Build Ogre demos" FALSE "OGRE_BUILD_COMPONENT_OVERLAY OR OGRE_BUILD_PLATFORM_WINRT OR OGRE_BUILD_PLATFORM_WINDOWS_PHONE" FALSE)
 option(OGRE_BUILD_SAMPLES2 "Build Ogre new demos (2.1)" FALSE)
