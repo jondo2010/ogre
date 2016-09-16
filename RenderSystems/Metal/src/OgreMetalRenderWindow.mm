@@ -59,8 +59,14 @@ namespace Ogre
         {
             // set the metal layer to the drawable size in case orientation or size changes
             CGSize drawableSize = mMetalView.bounds.size;
-            drawableSize.width  *= mMetalView.contentScaleFactor;
-            drawableSize.height *= mMetalView.contentScaleFactor;
+#ifdef TARGET_IOS
+            drawableSize.width  *= mMetalView.layer.contentsScale;
+            drawableSize.height *= mMetalView.layer.contentsScale;
+#else
+            NSScreen* screen = mMetalView.window.screen ?: [NSScreen mainScreen];
+            drawableSize.width *= screen.backingScaleFactor;
+            drawableSize.height *= screen.backingScaleFactor;
+#endif
 
             mMetalLayer.drawableSize = drawableSize;
 
@@ -142,33 +148,36 @@ namespace Ogre
     bool MetalRenderWindow::nextDrawable(void)
     {
         bool isSuccess = true;
-
-        if( !mCurrentDrawable )
+        
+        @autoreleasepool
         {
-            if( mMetalView.layerSizeDidUpdate )
-                checkLayerSizeChanges();
-
-            // do not retain current drawable beyond the frame.
-            // There should be no strong references to this object outside of this view class
-            mCurrentDrawable = [mMetalLayer nextDrawable];
             if( !mCurrentDrawable )
             {
-                LogManager::getSingleton().logMessage( "Metal ERROR: Failed to get a drawable!",
-                                                       LML_CRITICAL );
-                //We're unable to render. Skip frame.
-                //dispatch_semaphore_signal( _inflight_semaphore );
-
-                isSuccess = false;
-            }
-            else
-            {
-                if( mFSAA > 1 )
-                    mColourAttachmentDesc.resolveTexture = mCurrentDrawable.texture;
+                if( mMetalView.layerSizeDidUpdate )
+                    checkLayerSizeChanges();
+                
+                // do not retain current drawable beyond the frame.
+                // There should be no strong references to this object outside of this view class
+                mCurrentDrawable = [mMetalLayer nextDrawable];
+                if( !mCurrentDrawable )
+                {
+                    LogManager::getSingleton().logMessage( "Metal ERROR: Failed to get a drawable!",
+                                                          LML_CRITICAL );
+                    //We're unable to render. Skip frame.
+                    //dispatch_semaphore_signal( _inflight_semaphore );
+                    
+                    isSuccess = false;
+                }
                 else
-                    mColourAttachmentDesc.texture = mCurrentDrawable.texture;
+                {
+                    if( mFSAA > 1 )
+                        mColourAttachmentDesc.resolveTexture = mCurrentDrawable.texture;
+                    else
+                        mColourAttachmentDesc.texture = mCurrentDrawable.texture;
+                }
             }
         }
-
+        
         return isSuccess;
     }
     //-------------------------------------------------------------------------
@@ -199,6 +208,18 @@ namespace Ogre
             opt = miscParams->find("gamma");
             if( opt != end )
                 mHwGamma = StringConverter::parseBool( opt->second );
+
+            opt = miscParams->find("macAPICocoaUseNSView");
+            if( opt != end )
+            {
+                LogManager::getSingleton().logMessage("Mac Cocoa Window: Rendering on an external plain NSView*");
+                opt = miscParams->find("parentWindowHandle");
+                NSView *nsview = (__bridge NSView*)reinterpret_cast<void*>(StringConverter::parseUnsignedLong(opt->second));
+                assert( nsview &&
+                       "Unable to get a pointer to the parent NSView."
+                       "Was the 'parentWindowHandle' parameter set correctly in the call to createRenderWindow()?");
+                mWindow = [nsview window];
+            }
         }
 
         CGRect frame;
@@ -207,8 +228,10 @@ namespace Ogre
         frame.size.width = mWidth;
         frame.size.height = mHeight;
         mMetalView = [[OgreMetalView alloc] initWithFrame:frame];
-        mMetalLayer = (CAMetalLayer*)mMetalView.layer;
+        
+        [mWindow setContentView:mMetalView];
 
+        mMetalLayer             = (CAMetalLayer*)mMetalView.layer;
         mMetalLayer.device      = mOwnerDevice->mDevice;
         mMetalLayer.pixelFormat = MetalMappings::getPixelFormat( mFormat, mHwGamma );
 
@@ -218,6 +241,7 @@ namespace Ogre
 
         this->init( nil, nil );
 
+        checkLayerSizeChanges();
         windowMovedOrResized();
     }
     //-------------------------------------------------------------------------

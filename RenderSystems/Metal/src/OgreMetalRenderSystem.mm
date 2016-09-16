@@ -593,6 +593,10 @@ namespace Ogre
         desc.usage = MTLTextureUsageRenderTarget;
         if( renderTarget->prefersDepthTexture() )
             desc.usage |= MTLTextureUsageShaderRead;
+        
+#if OGRE_PLATFORM != OGRE_PLATFORM_APPLE_IOS
+        desc.storageMode = MTLStorageModePrivate;
+#endif
 
         PixelFormat desiredDepthBufferFormat = renderTarget->getDesiredDepthBufferFormat();
 

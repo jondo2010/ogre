@@ -32,7 +32,8 @@ THE SOFTWARE.
 #include "OgreRenderWindow.h"
 
 #include "OgreMetalRenderTargetCommon.h"
-#include "Windowing/iOS/OgreMetalView.h"
+
+#include "OgreMetalView.h"
 
 #import <QuartzCore/CAMetalLayer.h>
 
@@ -46,6 +47,7 @@ namespace Ogre
         id<CAMetalDrawable> mCurrentDrawable;
         id<MTLTexture>      mMsaaTex;
         OgreMetalView       *mMetalView;
+        NSWindow            *mWindow;
 
         MetalRenderSystem   *mRenderSystem;
 

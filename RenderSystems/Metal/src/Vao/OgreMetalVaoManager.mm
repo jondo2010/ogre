@@ -858,11 +858,17 @@ namespace Ogre
         sizeBytes = alignToNextMultiple( sizeBytes, 4u );
 
         MTLResourceOptions resourceOptions = 0;
+        
+#if OGRE_PLATFORM == OGRE_PLATFORM_APPLE_IOS
+        resourceOptions |= MTLResourceStorageModeShared;
+#else
+        resourceOptions |= MTLResourceStorageModeManaged;
+#endif
 
         if( forUpload )
-            resourceOptions = MTLResourceCPUCacheModeWriteCombined|MTLResourceStorageModeShared;
+            resourceOptions |= MTLResourceCPUCacheModeWriteCombined;
         else
-            resourceOptions = MTLResourceCPUCacheModeDefaultCache|MTLResourceStorageModeShared;
+            resourceOptions |= MTLResourceCPUCacheModeDefaultCache;
 
         id<MTLBuffer> bufferName = [mDevice->mDevice newBufferWithLength:sizeBytes
                                                                          options:resourceOptions];

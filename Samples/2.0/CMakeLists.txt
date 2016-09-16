@@ -19,8 +19,8 @@ endif()
 
 if( APPLE )
 	set( SAMPLE_COMMON_BASIC_RESOURCES ${SAMPLE_COMMON_BASIC_RESOURCES}
-		 ${CMAKE_CURRENT_SOURCE_DIR}/Common/src/System/iOS/Resources/Main.storyboard
 		 ${CMAKE_BINARY_DIR}/bin/resources2.cfg
+                 ${CMAKE_BINARY_DIR}/bin/plugins.cfg
 		 ${CMAKE_SOURCE_DIR}/Samples/Media/2.0
 		 ${CMAKE_SOURCE_DIR}/Samples/Media/Hlms
 		 ${CMAKE_SOURCE_DIR}/Samples/Media/packs/DebugPack.zip )
@@ -29,7 +29,13 @@ if( APPLE )
 		 ${CMAKE_SOURCE_DIR}/Samples/Media/models
 		 ${CMAKE_SOURCE_DIR}/Samples/Media/materials/textures )
 
-	set( SAMPLES_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/Common/src/System/iOS/Resources/Info.plist )
+        if( OGRE_BUILD_PLATFORM_APPLE_IOS )
+            list(APPEND SAMPLE_COMMON_BASIC_RESOURCES 
+		 ${CMAKE_CURRENT_SOURCE_DIR}/Common/src/System/iOS/Resources/Main.storyboard )
+             set( SAMPLES_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/Common/src/System/iOS/Resources/Info.plist )
+        else()
+            set( SAMPLES_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/Common/src/System/OSX/Resources/Info.plist )
+        endif()
 endif()
 
 if( OGRE_BUILD_SAMPLES2 )

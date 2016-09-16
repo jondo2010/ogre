@@ -421,6 +421,7 @@ cmake_dependent_option(OGRE_BUILD_LIBS_AS_FRAMEWORKS "Build frameworks for libra
 
 cmake_dependent_option(OGRE_BUILD_SAMPLES "Build Ogre demos" FALSE "OGRE_BUILD_COMPONENT_OVERLAY OR OGRE_BUILD_PLATFORM_WINRT OR OGRE_BUILD_PLATFORM_WINDOWS_PHONE" FALSE)
 option(OGRE_BUILD_SAMPLES2 "Build Ogre new demos (2.1)" FALSE)
+cmake_dependent_option(OGRE_BUILD_SAMPLES_AS_BUNDLES "Build samples as application bundles on OS X." TRUE "APPLE;OGRE_BUILD_SAMPLES2" FALSE)
 cmake_dependent_option(OGRE_BUILD_TOOLS "Build the command-line tools" TRUE "NOT OGRE_BUILD_PLATFORM_APPLE_IOS;NOT WINDOWS_STORE;NOT OGRE_BUILD_PLATFORM_WINDOWS_PHONE" FALSE)
 cmake_dependent_option(OGRE_BUILD_XSIEXPORTER "Build the Softimage exporter" FALSE "Softimage_FOUND" FALSE)
 option(OGRE_BUILD_TESTS "Build the unit tests & PlayPen" FALSE)

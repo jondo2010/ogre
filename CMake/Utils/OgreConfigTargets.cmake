@@ -311,7 +311,7 @@ function(ogre_config_sample_common SAMPLENAME)
     set_property(TARGET ${SAMPLENAME} PROPERTY INSTALL_RPATH_USE_LINK_PATH TRUE)
   endif ()
   
-  if (APPLE)
+  if (APPLE AND OGRE_BUILD_SAMPLES_AS_BUNDLES)
     # On OS X, create .app bundle
     set_property(TARGET ${SAMPLENAME} PROPERTY MACOSX_BUNDLE TRUE)
     if (NOT OGRE_BUILD_PLATFORM_APPLE_IOS)
@@ -326,7 +326,8 @@ function(ogre_config_sample_common SAMPLENAME)
       set_xcode_property( ${SAMPLENAME} IPHONEOS_DEPLOYMENT_TARGET ${MIN_IOS_VERSION} )
 	  set_property( TARGET ${SAMPLENAME} PROPERTY XCODE_ATTRIBUTE_IPHONEOS_DEPLOYMENT_TARGET[arch=arm64] "9.0" )
     endif()
-  endif (APPLE)
+  endif (APPLE AND OGRE_BUILD_SAMPLES_AS_BUNDLES)
+
   if (NOT OGRE_STATIC)
     if (CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
       # disable "lib" prefix on Unix
