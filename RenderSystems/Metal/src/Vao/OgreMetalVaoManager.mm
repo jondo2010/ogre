@@ -117,7 +117,7 @@ namespace Ogre
         for( size_t i=CPU_ACCESSIBLE_DEFAULT; i<=CPU_ACCESSIBLE_PERSISTENT_COHERENT; ++i )
             mDefaultPoolSize[i] = 32 * 1024 * 1024;
 
-        mSupportsIndirectBuffers    = true;
+        mSupportsIndirectBuffers    = false; // the _render() overload is not implemented yet!
 #endif
 
         mConstBufferMaxSize = 64 * 1024;        //64kb
